@@ -16,6 +16,7 @@
 		initialHeight: "450",
 		innerHeight: false,
 		maxHeight: false,
+        minHeight: false,
 		scalePhotos: true,
 		scrolling: true,
 		inline: false,
@@ -470,7 +471,7 @@
 		left = 0, 
 		offset = $box.offset(),
 		scrollTop, 
-		scrollLeft;
+		scrollLeft = 0;
 		
 		$window.unbind('resize.' + prefix);
 
@@ -478,7 +479,6 @@
 		$box.css({top: -9e4, left: -9e4});
 
 		scrollTop = $window.scrollTop();
-		scrollLeft = $window.scrollLeft();
 
 		if (settings.fixed && !isIE6) {
 			offset.top -= scrollTop;
@@ -502,7 +502,7 @@
 		if (settings.bottom !== false) {
 			top += Math.max($window.height() - settings.h - loadedHeight - interfaceHeight - setSize(settings.bottom, 'y'), 0);
 		} else if (settings.top !== false) {
-			top += setSize(settings.top, 'y');
+			top = setSize(settings.top, 'y');
 		} else {
 			top += Math.round(Math.max($window.height() - settings.h - loadedHeight - interfaceHeight, 0) / 2);
 		}
@@ -518,6 +518,9 @@
 		$wrap[0].style.width = $wrap[0].style.height = "9999px";
 		
 		function modalDimensions(that) {
+            if (parseInt(that.style.height) <= settings.minHeight) {
+                that.style.height = settings.minHeight + "px";
+            }
 			$topBorder[0].style.width = $bottomBorder[0].style.width = $content[0].style.width = that.style.width;
 			$content[0].style.height = $leftBorder[0].style.height = $rightBorder[0].style.height = that.style.height;
 		}
@@ -807,7 +810,8 @@
 				prep($tag(div, 'Error').text('This image could not be loaded'));
 			})
 			.load(function () {
-				var percent;
+				var percent,
+                    contentHeight;
 				photo.onload = null; //stops animated gifs from firing the onload repeatedly.
 				
 				if (settings.scalePhotos) {
@@ -825,9 +829,8 @@
 					}
 				}
 				
-				if (settings.h) {
-					photo.style.marginTop = Math.max(settings.h - photo.height, 0) / 2 + 'px';
-				}
+				contentHeight = Math.max(photo.height, settings.minHeight - 30);
+				photo.style.marginTop = Math.max(settings.h - photo.height, 0) / 2 + 'px';
 				
 				if ($related[1] && (settings.loop || $related[index + 1])) {
 					photo.style.cursor = 'pointer';
@@ -916,6 +919,29 @@
 	publicMethod.element = function () {
 		return $(element);
 	};
+
+    // Publicly navigate to a new image
+    publicMethod.setindex = function (val) {
+        if (!active && $related[1] && (index || settings.loop) && ((val+1) <= $related.length)) {
+            index = val;
+            publicMethod.load();
+        }
+    };
+
+    // returns related elements
+    publicMethod.related = function () {
+        return $related;
+    };
+
+    // Change top position
+    publicMethod.setTop = function (newTop) {
+        settings.top = newTop;
+    };
+
+    // get specified index
+    publicMethod.index = function () {
+        return index;
+    };
 
 	publicMethod.settings = defaults;
 
