@@ -1,7 +1,7 @@
-// ColorBox v1.3.19.2 - jQuery lightbox plugin
+// ColorBox v1.3.19.3 - jQuery lightbox plugin
 // (c) 2011 Jack Moore - jacklmoore.com
 // License: http://www.opensource.org/licenses/mit-license.php
-(function ($, document, window, console) {
+(function ($, document, window) {
 	var
 	// Default settings object.	
 	// See http://jacklmoore.com/colorbox for details.
@@ -29,10 +29,14 @@
 		rel: false,
 		opacity: 0.9,
 		preloading: true,
+
 		current: "image {current} of {total}",
 		previous: "previous",
 		next: "next",
 		close: "close",
+		xhrError: "This content failed to load.",
+		imgError: "This image failed to load.",
+
 		open: false,
 		returnFocus: true,
 		reposition: true,
@@ -807,7 +811,7 @@
 			.addClass(prefix + 'Photo')
 			.error(function () {
 				settings.title = false;
-				prep($tag(div, 'Error').text('This image could not be loaded'));
+				prep($tag(div, 'Error').html(settings.imgError));
 			})
 			.load(function () {
 				var percent,
@@ -853,7 +857,7 @@
 			}, 1);
 		} else if (href) {
 			$loadingBay.load(href, settings.data, function (data, status, xhr) {
-				prep(status === 'error' ? $tag(div, 'Error').text('Request unsuccessful: ' + xhr.statusText) : $(this).contents());
+				prep(status === 'error' ? $tag(div, 'Error').html(settings.xhrError) : $(this).contents());
 			});
 		}
 	};
@@ -946,4 +950,4 @@
 
 	publicMethod.settings = defaults;
 
-}(jQuery, document, this, console));
+}(jQuery, document, this));
