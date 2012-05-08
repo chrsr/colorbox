@@ -936,6 +936,7 @@
     // Change top position
     publicMethod.setTop = function (newTop) {
         settings.top = newTop;
+        publicMethod.position();
     };
 
     // get specified index
