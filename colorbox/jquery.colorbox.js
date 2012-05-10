@@ -848,9 +848,13 @@
 				
 				if ($related[1] && (settings.loop || $related[index + 1])) {
 					photo.style.cursor = 'pointer';
-					photo.onclick = function () {
-						publicMethod.next();
-					};
+					$(photo).click(function (e) {
+                        if(e.offsetX < (photo.width / 2)) {
+                            publicMethod.prev();
+                        } else {
+                            publicMethod.next();
+                        }
+					});
 				}
 				
 				if (isIE) {
